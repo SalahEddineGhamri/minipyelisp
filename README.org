@@ -1,0 +1,68 @@
+* MiniPyElisp
+
+** What ? 
+
+Transpiler from mini python (subset of python) to elisp for education purposes
+
+
+** Objectives
+
+This project is mainly to level up my C++ game.  The language was not chosen for its convenience to the task rather for
+job synergy reasons.
+
+No offense intended for 
+ + Elisp, i think it's a beautiful language, just hate those "()" 
+ + nor for Python for not using all its might for this task
+ + nor for C++ and my bad coding style 
+ + nor for Rust, for using unsafe C++
+
+ #+begin_quote
+Maybe Emacs is already Turing complete enough. Just let Python be Python, Lisp be Lisp, and accept that your tools are secretly alive.
+ #+end_quote
+
+
+** The gist
+
+Straight forward:
+
+1. Take some Mini Python code.
+2. Turn it into a Python-flavored AST (Abstract Syntax Tree). Think of it like a parse tree, but better.
+3. Then, we'll generalize that into some intermediate AST format. This is where the magic happens, making it generic enough.
+4. Finally, we'll convert that into an Elisp-specific AST.
+
+If this actually works, it'll be a killer C++ workout. And the best part? We might actually manage to generate Elisp without all those ridiculous parentheses! One can dream, right?
+
+
+** Build and run
+
+to build
+#+begin_src sh :results output
+make
+#+end_src
+
+#+RESULTS:
+: Compiling src/main.cpp...
+: g++ -Wall -Wextra -std=c++17 -g -O2 -Isrc -Isrc/backend -Isrc/frontend -Isrc/intermediate -Isrc/utils -c src/main.cpp -o build/obj/src/main.o -MMD -MP
+: Linking minipylisp...
+: g++  build/obj/src/main.o -Wall -Wextra -std=c++17 -g -O2 -o build/minipylisp
+: Build complete! Executable located at: build/minipylisp
+
+to run the code
+#+begin_src sh :results output
+make run
+#+end_src
+
+#+RESULTS:
+: starting minipylisp...
+: Hello from minipyelisp!
+
+to clean
+#+begin_src sh :results output
+make clean
+#+end_src
+
+#+RESULTS:
+: removing artifacts...
+: Clean done.
+
+
