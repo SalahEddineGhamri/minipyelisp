@@ -65,4 +65,88 @@ make clean
 : removing artifacts...
 : Clean done.
 
+to build and run the tests
+#+begin_src sh :results output
+make test
+#+end_src
+
+#+RESULTS:
+: Running tests...
+: ./test_runner
+: [==========] Running 2 tests from 1 test suite.
+: [----------] Global test environment set-up.
+: [----------] 2 tests from LexerTest
+: [ RUN      ] LexerTest.TokenizeIntegerLiteral
+: [       OK ] LexerTest.TokenizeIntegerLiteral (0 ms)
+: [ RUN      ] LexerTest.TokenizeFloatLiteral
+: [       OK ] LexerTest.TokenizeFloatLiteral (0 ms)
+: [----------] 2 tests from LexerTest (0 ms total)
+: 
+: [----------] Global test environment tear-down
+: [==========] 2 tests from 1 test suite ran. (0 ms total)
+: [  PASSED  ] 2 tests.
+
+
+* Step by step
+
+** scope of the mini python
+tbd
+
+** mini python lexer
+The lexer is a component responsible of turning a raw stream of character into a list of tokens. It can be found in all
+of the compilers and it is the first step when dealing with any stream of characters as a source code.
+
+We are implementing a rule based lexer that is capable of decomposing the source code into tokens based on clear
+implemented rules.  Some of well implemented lexers are available already, we could have just used them but implementing
+our own lexer is more fun and more educating. Some of the most used choices are Flex/Bison and ANTLR, they can be used
+after defining the grammar of the language to be tokenized.
+
+The lexer is not a parser, meaning that we do not care about the correctness of the sequence according to the language
+grammar rather we care only about catching the type of the language elements, tokens. We still need a parser after this
+step but with a lexer the parser is going to be a less of hustle.
+
+Other method is to combine the lexic analysis phase and parsing into one. it is called "scannerless parsing" but it
+comes with downsides and drawbacks known with little search, better stick with classical way of having a separate lexer.
+
+** Unit testing and TDD framework
+
+#+begin_src C++
+#include "frontend/lexer.hpp"
+#include "frontend/token.hpp"
+#include <gtest/gtest.h>
+
+using namespace minipyelisp::lexer;
+
+struct TokenizeTestCase {
+  std::string input;
+  TokenType expected_type;
+  std::string expected_value;
+};
+
+class LexerTest : public ::testing::TestWithParam<TokenizeTestCase> {};
+
+TEST_P(LexerTest, TokenizeLiterals) {
+  const auto& param = GetParam();
+  Lexer lexer(param.input);
+  auto tokens = lexer.tokenize();
+  ASSERT_FALSE(tokens.empty());
+  EXPECT_EQ(tokens[0].type, param.expected_type);
+  EXPECT_EQ(tokens[0].value, param.expected_value);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  LiteralTests,
+  LexerTest,
+  ::testing::Values(
+    TokenizeTestCase{"20", TokenType::INT_LITERAL, "20"},
+    TokenizeTestCase{"20.0", TokenType::FLOAT_LITERAL, "20.0"}
+  )
+);
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+#+end_src
+
 
