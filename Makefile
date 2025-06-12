@@ -1,6 +1,6 @@
 # TODO: shall build on windows too.
 
-# compiler and language
+# compiler and compile flags
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g -O2
 
@@ -10,13 +10,17 @@ BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
 TARGET = $(BUILD_DIR)/$(TARGET_NAME)
 
+# find sources using shell command
 SRCS = $(shell find src -name "*.cpp")
 
+# mirror src for the objects
 OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS = $(patsubst %.cpp, $(OBJ_DIR)/%.d, $(SRCS))
 OBJ_SUBDIRS = $(sort $(dir $(OBJS)))
 
-.PHONY: all clean run rebuild directories
+.PHONY: all clean test run rebuild directories
+
+# the default target
 all: directories $(TARGET)
 
 # build
@@ -49,6 +53,39 @@ $(OBJ_DIR)/src/%.o: src/%.cpp
 
 VPATH = src:src/backend:src/frontend:src/intermediate:src/utils
 -include $(DEPS)
+
+# Gtest sources
+GTEST_DIR := lib/googletest
+GTEST_SRC := $(GTEST_DIR)/src/gtest-all.cc
+GTEST_OBJ := $(BUILD_DIR)/gtest-all.o
+GTEST_INC := -I$(GTEST_DIR) -I$(GTEST_DIR)/include
+
+#  build gtest as object file 
+$(GTEST_OBJ): $(GTEST_SRC)
+	@echo "Building Google Test ..."
+	$(CXX) $(CXXFLAGS) $(GTEST_INC) -c $< -o $@
+
+# Test sources
+TEST_SRC := $(wildcard tests/*.cpp)
+TEST_OBJ := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(notdir $(TEST_SRC)))
+
+# compile test files
+$(BUILD_DIR)/%.o: tests/%.cpp
+	@echo "Compiling test: $<"
+	$(CXX) $(CXXFLAGS) $(GTEST_INC) $(INC_DIRS) -c $< -o $@
+
+# link gtest
+TEST_BIN := test_runner
+
+# only one main
+APP_OBJS_NO_MAIN := $(filter-out $(OBJ_DIR)/src/main.o, $(OBJS))
+$(TEST_BIN): $(TEST_OBJ) $(APP_OBJS_NO_MAIN) $(GTEST_OBJ)
+	@echo "Linking test runner..."
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+test: $(TEST_BIN)
+	@echo "Running tests..."
+	./$(TEST_BIN)
 
 clean:
 	@echo "removing artifacts..."
