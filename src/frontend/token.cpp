@@ -20,6 +20,10 @@ std::string Token::to_string() const {
     str_token = "INT token " + value;
   }
 
+  if (type == TokenType::FLOAT_LITERAL) {
+    str_token = "FLOAT token " + value;
+  }
+
   return str_token;
 };
 

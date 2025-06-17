@@ -19,7 +19,7 @@ int main() {
                        "    return a + b\n";
   */
 
-  std::string source = " 20 \n";
+  std::string source = " 20.0 \n";
 
   minipyelisp::lexer::Lexer lexer(source);
 

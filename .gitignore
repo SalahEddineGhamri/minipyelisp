@@ -1,4 +1,5 @@
 build/
+test_runner
 compile_commands.json
 .cache/
 .clangd/

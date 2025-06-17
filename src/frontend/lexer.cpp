@@ -34,15 +34,28 @@ void Lexer::skip_whitespace() {
 // check the end of file
 bool Lexer::is_eof() const { return current_pos >= source.length(); }
 
+// tokenize number
 Token Lexer::read_number() {
+
   // as starter INT_LITERAL or FLOAT_LITERAL
   std::string nbr_str;
+  TokenType type = TokenType::INT_LITERAL;
 
+  // int
   while (!is_eof() && std::isdigit(peek())) {
     nbr_str += consume();
   }
 
-  Token result(TokenType::INT_LITERAL, nbr_str);
+  // float
+  if (!is_eof() && peek() == '.' && std::isdigit(peek(1))) {
+    type = TokenType::FLOAT_LITERAL;
+    nbr_str += consume(); // take the point
+    while (!is_eof() && std::isdigit(peek())) {
+      nbr_str += consume();
+    }
+  }
+
+  Token result(type, nbr_str);
   return result;
 }
 
