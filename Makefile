@@ -1,8 +1,10 @@
 # TODO: shall build on windows too.
 
 # compiler and compile flags
+# instructions on installing latest gcc compiler can be found here
+# https://medium.com/@xersendo/moving-to-c-26-how-to-build-and-set-up-gcc-15-1-on-ubuntu-f52cc9173fa0
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -g -O2
+CXXFLAGS = -Wall -Wextra -std=c++17 -g -O2 -pthread
 
 INC_DIRS = -Isrc -Isrc/backend -Isrc/frontend -Isrc/intermediate -Isrc/utils
 TARGET_NAME = minipylisp
