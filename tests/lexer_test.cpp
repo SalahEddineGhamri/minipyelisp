@@ -7,8 +7,7 @@ using namespace minipyelisp::lexer;
 // define a test case
 struct TokenizeTestCase {
   std::string input;
-  TokenType expected_type;
-  std::string expected_value;
+  std::vector<Token> expected_tokens;
   std::string name;
 };
 
@@ -21,24 +20,32 @@ TEST_P(LexerTest, TokenizeLiterals) {
   Lexer lexer(param.input);
   auto tokens = lexer.tokenize();
   ASSERT_FALSE(tokens.empty()); // must return non empty array
-  // TODO: check all tokens vector instead of the first element
-  EXPECT_EQ(tokens[0].type, param.expected_type);
-  EXPECT_EQ(tokens[0].value, param.expected_value);
+  // size - 1 due the presence of EOF Token
+  for (size_t i = 0; i < tokens.size() - 1; ++i) {
+    EXPECT_EQ(tokens[i].type, param.expected_tokens[i].type);
+    EXPECT_EQ(tokens[i].value, param.expected_tokens[i].value);
+  }
 }
 
 // test suite with param
 INSTANTIATE_TEST_SUITE_P(
     LiteralTests, LexerTest,
     ::testing::Values(
-        TokenizeTestCase{"20", TokenType::INT_LITERAL, "20", "integer_20"},
-        TokenizeTestCase{"20.0", TokenType::FLOAT_LITERAL, "20.0",
-                         "float_20_0"},
-        TokenizeTestCase{" this ", TokenType::IDENTIFIER, "this",
+        TokenizeTestCase{
+            "20", {Token(TokenType::INT_LITERAL, "20")}, "integer_20"},
+        TokenizeTestCase{
+            "20.0", {Token(TokenType::FLOAT_LITERAL, "20.0")}, "float_20_0"},
+        TokenizeTestCase{" this ",
+                         {Token(TokenType::IDENTIFIER, "this")},
                          "identifier_this"},
-        TokenizeTestCase{"th0_", TokenType::IDENTIFIER, "th0_",
-                         "identifier_th0_"},
-        TokenizeTestCase{"if", TokenType::KW_IF, "if", "keyword_if"},
-        TokenizeTestCase{"def", TokenType::KW_DEF, "def", "keyword_def"}),
+        TokenizeTestCase{
+            "th0_", {Token(TokenType::IDENTIFIER, "th0_")}, "identifier_th0_"},
+        TokenizeTestCase{"if", {Token(TokenType::KW_IF, "if")}, "keyword_if"},
+        TokenizeTestCase{
+            "def", {Token(TokenType::KW_DEF, "def")}, "keyword_def"},
+        TokenizeTestCase{"\"Hello\"",
+                         {Token(TokenType::STRING_LITERAL, "Hello")},
+                         "string_single_quote"}),
     // Lambda function to generate test names
     [](const ::testing::TestParamInfo<TokenizeTestCase> &info) {
       std::string name = info.param.name;

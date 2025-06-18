@@ -25,6 +25,7 @@ private:
   // read helpers
   Token read_number();
   Token read_identifier_or_keyword();
+  Token read_string();
 };
 
 } // namespace minipyelisp::lexer

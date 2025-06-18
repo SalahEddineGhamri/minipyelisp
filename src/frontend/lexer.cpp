@@ -2,6 +2,7 @@
 #include "frontend/lexer.hpp"
 #include "token.hpp"
 #include <cctype>
+#include <iostream>
 #include <map>
 
 namespace minipyelisp::lexer {
@@ -85,35 +86,57 @@ Token Lexer::read_identifier_or_keyword() {
   return Token(TokenType::IDENTIFIER, id_str);
 };
 
+Token Lexer::read_string() {
+  /*
+   * basically we extract text inside ' or ""
+   */
+  std::string str_val;
+
+  // we are already inside ' or " we need to consume it
+  char quote_char = consume();
+
+  while (!is_eof() && peek() != quote_char) {
+    str_val += consume();
+  }
+
+  // is_eof case
+  if (is_eof()) {
+    std::cerr << "lexer error: unterminated string (EOF reached)" << std::endl;
+    return Token(TokenType::UNKNOWN, str_val);
+  }
+
+  // quote_char case
+  consume(); // consume the closing quote but get rid of it
+
+  return Token(TokenType::STRING_LITERAL, str_val);
+};
+
 // state machine
 Token Lexer::get_next_token() {
-
   // skip all white spaces
   skip_whitespace();
-
   if (is_eof()) {
     return Token(TokenType::END_OF_FILE, "");
   }
-
   char c = peek();
 
-  // numbers start with a digit
   if (std::isdigit(c)) {
     return read_number();
   }
 
-  // identifier or keyword starts with alphabet
   if (std::isalpha(c) || c == '_') {
     return read_identifier_or_keyword();
   }
 
-  /*
   if (c == '\'' || c == '"') {
     return read_string();
   }
-  */
 
-  // the rest ...
+  // TODO: operators
+  // = -> ==
+  // + and -
+  // :
+  // ( and )
 
   Token token(TokenType::END_OF_FILE, "end of file");
 

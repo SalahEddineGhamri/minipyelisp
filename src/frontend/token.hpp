@@ -5,6 +5,7 @@
 
 namespace minipyelisp {
 namespace lexer {
+
 // TODO: add more types based on the scope of minipython
 // token types
 enum class TokenType {
