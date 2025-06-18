@@ -21,6 +21,7 @@ TEST_P(LexerTest, TokenizeLiterals) {
   Lexer lexer(param.input);
   auto tokens = lexer.tokenize();
   ASSERT_FALSE(tokens.empty()); // must return non empty array
+  // TODO: check all tokens vector instead of the first element
   EXPECT_EQ(tokens[0].type, param.expected_type);
   EXPECT_EQ(tokens[0].value, param.expected_value);
 }
@@ -28,10 +29,16 @@ TEST_P(LexerTest, TokenizeLiterals) {
 // test suite with param
 INSTANTIATE_TEST_SUITE_P(
     LiteralTests, LexerTest,
-    ::testing::Values(TokenizeTestCase{"20", TokenType::INT_LITERAL, "20",
-                                       "integer_20"},
-                      TokenizeTestCase{"20.0", TokenType::FLOAT_LITERAL, "20.0",
-                                       "float_20_0"}),
+    ::testing::Values(
+        TokenizeTestCase{"20", TokenType::INT_LITERAL, "20", "integer_20"},
+        TokenizeTestCase{"20.0", TokenType::FLOAT_LITERAL, "20.0",
+                         "float_20_0"},
+        TokenizeTestCase{" this ", TokenType::IDENTIFIER, "this",
+                         "identifier_this"},
+        TokenizeTestCase{"th0_", TokenType::IDENTIFIER, "th0_",
+                         "identifier_th0_"},
+        TokenizeTestCase{"if", TokenType::KW_IF, "if", "keyword_if"},
+        TokenizeTestCase{"def", TokenType::KW_DEF, "def", "keyword_def"}),
     // Lambda function to generate test names
     [](const ::testing::TestParamInfo<TokenizeTestCase> &info) {
       std::string name = info.param.name;

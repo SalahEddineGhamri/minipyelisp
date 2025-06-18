@@ -6,7 +6,10 @@
 namespace minipyelisp::lexer {
 
 // helper: map token types to string
-static const std::map<TokenType, std::string> tokenTypeStrings = {};
+static const std::map<TokenType, std::string> tokenTypeStrings = {
+    /* we define strings for all the tokens we use
+     */
+};
 
 std::string Token::to_string() const {
 

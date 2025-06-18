@@ -2,6 +2,7 @@
 #include "frontend/lexer.hpp"
 #include "token.hpp"
 #include <cctype>
+#include <map>
 
 namespace minipyelisp::lexer {
 
@@ -59,6 +60,31 @@ Token Lexer::read_number() {
   return result;
 }
 
+static const std::map<std::string, TokenType> keywords = {
+    {"if", TokenType::KW_IF},       {"else", TokenType::KW_ELSE},
+    {"def", TokenType::KW_DEF},     {"return", TokenType::KW_RETURN},
+    {"while", TokenType::KW_WHILE}, {"True", TokenType::KW_TRUE},
+    {"False", TokenType::KW_FALSE}, {"None", TokenType::KW_NONE}};
+
+Token Lexer::read_identifier_or_keyword() {
+  /*
+    - keywords: strings defined in the language
+    - indetifiers: strings created by the user (variables, functions)
+   */
+  std::string id_str;
+  // identifiers star always with alpha but can contain digit or _
+  while (!is_eof() && (std::isalnum(peek()) || peek() == '_')) {
+    id_str += consume();
+  }
+  // look for id_str in keywords
+  // if found it will point to something, else is the end
+  auto it = keywords.find(id_str);
+  if (it != keywords.end()) {
+    return Token(it->second, id_str);
+  }
+  return Token(TokenType::IDENTIFIER, id_str);
+};
+
 // state machine
 Token Lexer::get_next_token() {
 
@@ -71,15 +97,17 @@ Token Lexer::get_next_token() {
 
   char c = peek();
 
+  // numbers start with a digit
   if (std::isdigit(c)) {
     return read_number();
   }
 
-  /*
-  if (std::isalpha(c) || c == '_'){
+  // identifier or keyword starts with alphabet
+  if (std::isalpha(c) || c == '_') {
     return read_identifier_or_keyword();
   }
 
+  /*
   if (c == '\'' || c == '"') {
     return read_string();
   }
