@@ -22,7 +22,6 @@ int main() {
 
   std::vector<minipyelisp::lexer::Token> tokens = lexer.tokenize();
 
-  // print
   std::for_each(tokens.begin(), tokens.end(),
                 [](minipyelisp::lexer::Token &token) {
                   std::cout << token.to_string() << std::endl;

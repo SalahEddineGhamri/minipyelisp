@@ -113,12 +113,23 @@ Token Lexer::read_string() {
 
 // state machine
 Token Lexer::get_next_token() {
+
   // skip all white spaces
   skip_whitespace();
+
   if (is_eof()) {
     return Token(TokenType::END_OF_FILE, "");
   }
+
   char c = peek();
+
+  // skip comments
+  if (c == '#') {
+    while (!is_eof() && c != '\n') {
+      c = consume();
+    }
+    c = peek();
+  }
 
   if (std::isdigit(c)) {
     return read_number();
@@ -132,11 +143,88 @@ Token Lexer::get_next_token() {
     return read_string();
   }
 
-  // TODO: operators
-  // = -> ==
-  // + and -
-  // :
-  // ( and )
+  switch (c) {
+  case '+':
+    consume();
+    return Token(TokenType::OP_PLUS, "+");
+  case '-':
+    consume();
+    return Token(TokenType::OP_MINUS, "-");
+  case '=':
+    consume();
+    // ==
+    if (peek() == '=') {
+      consume();
+      return Token(TokenType::OP_EQ, "==");
+    }
+    return Token(TokenType::OP_ASSIGN, "=");
+  case ':':
+    consume();
+    return Token(TokenType::OP_COLON, ":");
+  case '(':
+    consume();
+    return Token(TokenType::PAREN_OPEN, "(");
+  case ')':
+    consume();
+    return Token(TokenType::PAREN_CLOSE, ")");
+  case ',':
+    consume();
+    return Token(TokenType::OP_COMMA, ",");
+  case '{':
+    consume();
+    return Token(TokenType::BRACE_OPEN, "{");
+  case '}':
+    consume();
+    return Token(TokenType::BRACE_CLOSE, "}");
+  case '*':
+    consume();
+    return Token(TokenType::OP_STAR, "*");
+  case '[':
+    consume();
+    return Token(TokenType::BRACKET_OPEN, "[");
+  case ']':
+    consume();
+    return Token(TokenType::BRACKET_CLOSE, "]");
+  case '\n':
+    consume();
+    return Token(TokenType::NEWLINE, "new line");
+  case '/':
+    consume();
+    return Token(TokenType::OP_SLASH, "/");
+
+  case '!':
+    consume();
+    if (peek() == '=') {
+      consume();
+      return Token(TokenType::OP_NE, "!=");
+    }
+    return Token(TokenType::UNKNOWN, "!");
+
+  default:
+    consume();
+    return Token(TokenType::UNKNOWN, std::string(1, c));
+  }
+
+  /*
+
+
+    case ':': consume(); return Token(TokenType::OP_COLON, ":",
+    current_line, start_col);
+    case ';': consume(); return
+    Token(TokenType::OP_SEMICOLON, ";", current_line, start_col);
+    case '=':
+    consume();
+    if (peek() == '=') { consume(); return Token(TokenType::OP_EQ,
+    "==", current_line, start_col); } return Token(TokenType::OP_ASSIGN, "=",
+    current_line, start_col);
+
+
+
+    // python indentation handling will come later
+    // TODO: Indentation/Dedent tokens require special handling and tracking of
+    indentation levels.
+
+    */
 
   Token token(TokenType::END_OF_FILE, "end of file");
 
