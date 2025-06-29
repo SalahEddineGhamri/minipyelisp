@@ -3,27 +3,26 @@
  */
 
 #include "frontend/lexer.hpp"
+#include "frontend/parser/parser.hpp"
 #include "token.hpp"
 #include <algorithm>
 #include <iostream>
 
 int main() {
 
-  std::string source = "x = 10 + 20\n"
-                       "if x == 30:\n"
-                       "    print(\"Hello\")\n"
-                       "else:\n"
-                       "    y = 'world'\n"
-                       "    # This is a comment\n"
-                       "def foo(a, b):\n"
-                       "    return a + b\n";
+  std::string source = "x + y";
 
   minipyelisp::lexer::Lexer lexer(source);
 
   std::vector<minipyelisp::lexer::Token> tokens = lexer.tokenize();
 
-  std::for_each(tokens.begin(), tokens.end(),
-                [](minipyelisp::lexer::Token &token) {
-                  std::cout << token.to_string() << std::endl;
-                });
+  minipyelisp::parser::Parser parser(tokens);
+
+  std::unique_ptr<minipyelisp::ast::ASTNode> ast = parser.parse();
+
+  if (ast) {
+    std::cout << "Successfully parsed the source code." << std::endl;
+  } else {
+    std::cout << "Failed to parse the source code." << std::endl;
+  }
 }

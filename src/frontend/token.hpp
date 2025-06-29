@@ -18,6 +18,7 @@ enum class TokenType {
   KW_TRUE,
   KW_FALSE,
   KW_NONE,
+  KW_FOR,
 
   // Operators
   OP_PLUS,

@@ -110,43 +110,8 @@ comes with downsides and drawbacks known with little search, better stick with c
 
 ** Unit testing and TDD framework
 
-#+begin_src C++
-#include "frontend/lexer.hpp"
-#include "frontend/token.hpp"
-#include <gtest/gtest.h>
+1. use unit testing to create a python lexer
 
-using namespace minipyelisp::lexer;
-
-struct TokenizeTestCase {
-  std::string input;
-  TokenType expected_type;
-  std::string expected_value;
-};
-
-class LexerTest : public ::testing::TestWithParam<TokenizeTestCase> {};
-
-TEST_P(LexerTest, TokenizeLiterals) {
-  const auto& param = GetParam();
-  Lexer lexer(param.input);
-  auto tokens = lexer.tokenize();
-  ASSERT_FALSE(tokens.empty());
-  EXPECT_EQ(tokens[0].type, param.expected_type);
-  EXPECT_EQ(tokens[0].value, param.expected_value);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-  LiteralTests,
-  LexerTest,
-  ::testing::Values(
-    TokenizeTestCase{"20", TokenType::INT_LITERAL, "20"},
-    TokenizeTestCase{"20.0", TokenType::FLOAT_LITERAL, "20.0"}
-  )
-);
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
 #+end_src
 
 

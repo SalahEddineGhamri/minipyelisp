@@ -26,6 +26,7 @@ static const std::map<TokenType, std::string> tokenTypeStrings = {
     {TokenType::PAREN_CLOSE, "PAREN CLOSE token"},
     {TokenType::OP_COMMA, "COMMA token"},
     {TokenType::KW_RETURN, "RETURN token"},
+    {TokenType::KW_FOR, "For token"},
 };
 
 std::string Token::to_string() const {

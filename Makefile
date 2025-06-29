@@ -6,7 +6,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g -O2 -pthread
 
-INC_DIRS = -Isrc -Isrc/backend -Isrc/frontend -Isrc/intermediate -Isrc/utils
+INC_DIRS = -Isrc -Isrc/backend -Isrc/frontend -Isrc/frontend/parser -Isrc/frontend/ast -Isrc/intermediate -Isrc/utils
 TARGET_NAME = minipylisp
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
@@ -53,7 +53,7 @@ $(OBJ_DIR)/src/%.o: src/%.cpp
 	@echo "Compiling $<..."
 	$(CXX) $(CXXFLAGS) $(INC_DIRS) -c $< -o $@ -MMD -MP
 
-VPATH = src:src/backend:src/frontend:src/intermediate:src/utils
+VPATH = src:src/backend:src/frontend:src/frontend/parser:src/frontend/ast:src/intermediate:src/utils
 -include $(DEPS)
 
 # Gtest sources

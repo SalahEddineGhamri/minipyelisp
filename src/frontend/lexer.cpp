@@ -5,6 +5,9 @@
 #include <iostream>
 #include <map>
 
+// TODO: Python indentation detection and handeling
+// TODO: for and while
+
 namespace minipyelisp::lexer {
 
 Lexer::Lexer(const std::string &source_code) : source(source_code) {}
@@ -65,7 +68,9 @@ static const std::map<std::string, TokenType> keywords = {
     {"if", TokenType::KW_IF},       {"else", TokenType::KW_ELSE},
     {"def", TokenType::KW_DEF},     {"return", TokenType::KW_RETURN},
     {"while", TokenType::KW_WHILE}, {"True", TokenType::KW_TRUE},
-    {"False", TokenType::KW_FALSE}, {"None", TokenType::KW_NONE}};
+    {"False", TokenType::KW_FALSE}, {"None", TokenType::KW_NONE},
+    {"for", TokenType::KW_FOR},
+};
 
 Token Lexer::read_identifier_or_keyword() {
   /*
@@ -205,29 +210,7 @@ Token Lexer::get_next_token() {
     return Token(TokenType::UNKNOWN, std::string(1, c));
   }
 
-  /*
-
-
-    case ':': consume(); return Token(TokenType::OP_COLON, ":",
-    current_line, start_col);
-    case ';': consume(); return
-    Token(TokenType::OP_SEMICOLON, ";", current_line, start_col);
-    case '=':
-    consume();
-    if (peek() == '=') { consume(); return Token(TokenType::OP_EQ,
-    "==", current_line, start_col); } return Token(TokenType::OP_ASSIGN, "=",
-    current_line, start_col);
-
-
-
-    // python indentation handling will come later
-    // TODO: Indentation/Dedent tokens require special handling and tracking of
-    indentation levels.
-
-    */
-
   Token token(TokenType::END_OF_FILE, "end of file");
-
   return token;
 };
 
